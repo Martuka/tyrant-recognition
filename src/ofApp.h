@@ -34,6 +34,7 @@ public:
     struct Pictures {
         ofImage image;
         string name;
+        string tyrant;
         string delta;
     };
 

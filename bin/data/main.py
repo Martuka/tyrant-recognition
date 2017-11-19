@@ -30,8 +30,8 @@ def main():
 
     # Create encodings database
     if CREATE_DB:
-        files = get_files_list("data/all-included-set")
-        create_templates_database(files, "db/named-set-templates.db")
+        files = get_files_list("data/RecoFacial_Dataset")
+        create_templates_database(files, "db/dataset_facial_encodings.db")
     else:
         # dir_path = os.path.dirname(os.path.realpath(__file__))
         # cwd = os.getcwd()
@@ -45,7 +45,7 @@ def main():
         # Get face encodings for each face in the image:
         subject_template = fr.face_encodings(subject)[0]
 
-        known_templates_dict = load_dict_from_db("data/db/named-set-templates.db")
+        known_templates_dict = load_dict_from_db("data/db/dataset_facial_encodings.db")
 
         temp = dict()
 
@@ -55,9 +55,12 @@ def main():
         result = sorted(temp.items(), key=lambda x: x[1][0])
         to_write = []
         for (path, delta) in result[:NB_RESULTS]:
-            name = path[path.rfind('/') + 1:path.rfind('-')]
-            print(path, name, ": delta = {}".format(delta[0]))
-            to_write.append((path, name, delta[0]))
+            elems = path.split('/')
+            name = elems[-2]
+            tyrant = elems[-3]
+
+            print(path, name, tyrant, ": delta = {}".format(delta[0]))
+            to_write.append((path, name, tyrant, delta[0]))
 
         save_list_to_file(to_write, "data/results.txt")
 

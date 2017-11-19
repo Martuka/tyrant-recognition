@@ -27,7 +27,7 @@ void ofApp::setup() {
     takePicBtn.addListener(this, &ofApp::takePictureButtonPressed);
     performBtn.addListener(this, &ofApp::performButtonPressed);
 
-    panel1.setup("", "", MARGIN, MARGIN + 260);
+    panel1.setup("", "", 2*MARGIN, MARGIN + 260);
     panel1.add(takePicBtn.setup("Take picture"));
     imageArray64.reserve(64);
 }
@@ -48,8 +48,8 @@ void ofApp::draw() {
 
     float SPACE = HEIGHT / 100;
 
-    float x_start = MARGIN + cam_w + MARGIN;
-    float x_end = WIDTH - MARGIN - RES_WIDTH - 2*MARGIN;
+    float x_start = MARGIN + cam_w + 3.5*MARGIN;
+    float x_end = WIDTH - MARGIN - RES_WIDTH - MARGIN;
     float matrix_x = x_end - x_start;
 
     float y_start = MARGIN;
@@ -57,21 +57,21 @@ void ofApp::draw() {
     float matrix_y = y_end - y_start;
     float micro_margin = 8;
 
-    float pic_w = (matrix_x - 7 * micro_margin) / 8;
-    float pic_h = (matrix_y - 7 * micro_margin) / 8;
+    float pic_w = min(((matrix_x - 7 * micro_margin) / 8), ((matrix_y - 7 * micro_margin) / 8));
+    float pic_h = pic_w;
 
     float result_margin = 20;
 
     float result_h = (matrix_y - 3 * result_margin) / 4;
-    float result_w = result_h * 0.7;
+    float result_w = result_h;
 
     ofBackground(127, 127, 127);
 
-    cam.draw(MARGIN, MARGIN, cam_w, cam_h);
+    cam.draw(2*MARGIN, MARGIN, cam_w, cam_h);
 
     panel1.draw();
     if (!first) {
-        subjectImage.draw(MARGIN, MARGIN + 260, cam_w, cam_h);
+        subjectImage.draw(2*MARGIN, MARGIN + 260, cam_w, cam_h);
         panel2.draw();
     }
 
@@ -79,6 +79,7 @@ void ofApp::draw() {
         int W = WIDTH;
         int H = HEIGHT;
         int k = 0;
+        // drawing of 64 squared pictures
         for (int i = 0; i < 8; i++) {
             for (int j = 0; j < 8; j++) {
                 int pos_x = x_start + j*pic_w + j*micro_margin;
@@ -87,11 +88,12 @@ void ofApp::draw() {
                 k++;
             }
         }
+        // drawing of 4 results, firsts of the 64 previous
         for (int i = 0; i < 4; i++) {
             int pos_x = WIDTH - 2*MARGIN - result_w;
             int pos_y = i+1 * MARGIN + i * result_h + i * MARGIN;
             imageArray64[i]->image.draw(pos_x, pos_y, result_w, result_h);
-            ofDrawBitmapStringHighlight(imageArray64[i]->name, pos_x, pos_y + result_h);
+            ofDrawBitmapStringHighlight(imageArray64[i]->tyrant + " " + imageArray64[i]->name, pos_x, pos_y + result_h);
             ofDrawBitmapStringHighlight("delta: " + imageArray64[i]->delta, pos_x, pos_y + result_h + 20);
         }
     }
@@ -123,7 +125,8 @@ ofApp::Pictures* process(string* line) {
         pic->name += names[i] + " ";
     }
     pic->name += names[names.size() - 1];
-    pic->delta = elems[2];
+    pic->tyrant = elems[2] == "Dictateurs" ? "Dictator" : "Nobel Peace";
+    pic->delta = elems[3];
 
     return pic;
 }
@@ -144,10 +147,10 @@ void ofApp::takePictureButtonPressed() {
         subjectImage.save("img/subject.png");
     }
     if (first) {
-        panel2.setup("", "", MARGIN, MARGIN + 260 + 260);
+        panel2.setup("", "", 2*MARGIN, MARGIN + 260 + 260);
         panel2.add(performBtn.setup("Search!"));
 //        panel1.add(performBtn.setup("Search!"));
-        panel1.setPosition(MARGIN, MARGIN + 260 + 240);
+        panel1.setPosition(2*MARGIN, MARGIN + 260 + 240);
         first = false;
     }
 }
