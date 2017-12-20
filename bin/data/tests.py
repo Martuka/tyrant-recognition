@@ -1,7 +1,23 @@
-path = 'data/RecoFacial_Dataset/Dictateurs/Fidel_Castro/image-12.jpg'
+import sys
+from os import walk
+from helpers import *
 
-elems = path.split('/')
 
-print(elems)
-print(elems[-2])
-print(elems[-3])
+
+
+def main():
+
+    start = time()
+    atexit.register(endlog, start)
+    log("Start Python Program")
+
+    path = sys.argv[0]
+
+    for (dir_path, _, file_names) in walk(path):
+        if file_names:
+            for file in file_names:
+                if file.lower().endswith(('.png', '.jpg', '.jpeg')):
+
+
+
+

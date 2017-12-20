@@ -13,6 +13,8 @@ int RES_HEIGHT = 300;
 bool first = true;
 bool ready = false;
 
+string subject_picture_path = "tmp/subject.png";
+
 //--------------------------------------------------------------
 void ofApp::setup() {
     ofSetDataPathRoot("../Resources/data/");
@@ -25,11 +27,13 @@ void ofApp::setup() {
     HEIGHT = ofGetWindowHeight();
 
     takePicBtn.addListener(this, &ofApp::takePictureButtonPressed);
-    performBtn.addListener(this, &ofApp::performButtonPressed);
+    performBtn.addListener(this, &ofApp::performFacialRec);
 
     panel1.setup("", "", 2*MARGIN, MARGIN + 260);
     panel1.add(takePicBtn.setup("Take picture"));
     imageArray64.reserve(64);
+
+
 }
 
 //--------------------------------------------------------------
@@ -131,12 +135,22 @@ ofApp::Pictures* process(string* line) {
     return pic;
 }
 
+void ofApp::generateAverage() {
+    string command = "/usr/local/bin/python3 " +
+    ofToDataPath("average.py ", true) +
+    ofToDataPath("tmp ", true) +
+    ofToDataPath("&");
+
+    system(command.c_str());
+}
+
 void ofApp::keyPressed(int key) {
     if (key == 'p') {
-        this->takePictureButtonPressed();
+        takePictureButtonPressed();
     }
     if (key == ' ') {
-        this->performButtonPressed();
+        performFacialRec();
+        generateAverage();
     }
 }
 
@@ -144,7 +158,7 @@ void ofApp::takePictureButtonPressed() {
     if (cam.isInitialized()) {
         camClick.play();
         subjectImage.setFromPixels(cam.getPixels());
-        subjectImage.save("img/subject.png");
+        subjectImage.save(subject_picture_path);
     }
     if (first) {
         panel2.setup("", "", 2*MARGIN, MARGIN + 260 + 260);
@@ -155,10 +169,10 @@ void ofApp::takePictureButtonPressed() {
     }
 }
 
-void ofApp::performButtonPressed() {
+void ofApp::performFacialRec() {
     string command = "/usr/local/bin/python3 " +
     ofToDataPath("main.py ", true) +
-    ofToDataPath("img/subject.png", true);
+    ofToDataPath(subject_picture_path, true);
 
     system(command.c_str());
     string line;

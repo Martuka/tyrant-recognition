@@ -27,7 +27,8 @@ public:
 	void gotMessage(ofMessage msg);
 
     void takePictureButtonPressed();
-    void performButtonPressed();
+    void performFacialRec();
+    void generateAverage();
 
     void onResultReady();
 

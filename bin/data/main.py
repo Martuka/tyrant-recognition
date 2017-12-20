@@ -12,8 +12,10 @@ import face_recognition as fr
 from helpers import *
 import sys
 import os
+from shutil import copy
+import random
 
-# Replace False by True to recreate databse, then put back to False
+# Replace False by True to recreate database, then put back to False
 CREATE_DB = False
 NB_RESULTS = 64
 
@@ -54,6 +56,7 @@ def main():
 
         result = sorted(temp.items(), key=lambda x: x[1][0])
         to_write = []
+        to_copy = []
         for (path, delta) in result[:NB_RESULTS]:
             elems = path.split('/')
             name = elems[-2]
@@ -61,8 +64,17 @@ def main():
 
             print(path, name, tyrant, ": delta = {}".format(delta[0]))
             to_write.append((path, name, tyrant, delta[0]))
+            # if tyrant.endswith('rs'):
+            to_copy.append(path)
 
         save_list_to_file(to_write, "data/results.txt")
+
+
+        for img in to_copy[:6]:
+            _, ext = os.path.splitext(img)
+            dst = 'data/tmp/'+str(random.random())+ext
+            print("copying {}\nto {}".format(img, dst))
+            copy('data/'+img, dst)
 
 
 if __name__ == "__main__":
