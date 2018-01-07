@@ -32,7 +32,7 @@ public:
 
     void onResultReady();
 
-    struct Pictures {
+    struct Picture {
         ofImage image;
         string name;
         string tyrant;
@@ -43,7 +43,7 @@ public:
     vector<string> deltas;
     vector<string> photos;
     vector<ofImage> matches;
-    vector<Pictures*> imageArray64;
+    vector<Picture*> imageArray64;
     ofTrueTypeFont daFont;
     ofSoundPlayer camClick;
     ofVideoGrabber cam;

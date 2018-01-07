@@ -4,9 +4,11 @@ import cv2
 import numpy as np
 import math
 import sys
-import glob
+import matplotlib.pyplot as mp
+import imageio
 
-STAND_ALONE = True
+
+# STAND_ALONE = True
 
 # Read points from text files in directory
 def readPoints(path) :
@@ -41,7 +43,7 @@ def readImages(path) :
     #List all files in the directory and read points from text files one by one
     for filePath in sorted(os.listdir(path)):
 
-        if filePath.endswith(".jpg"):
+        if filePath.lower().endswith(('.png', '.jpg', '.jpeg')):
             # Read image found.
             img = cv2.imread(os.path.join(path,filePath))
 
@@ -100,14 +102,11 @@ def calculateDelaunayTriangles(rect, points):
     for p in points:
         subdiv.insert((p[0], p[1]))
 
-
     # List of triangles. Each triangle is a list of 3 points ( 6 numbers )
     triangleList = subdiv.getTriangleList()
 
     # Find the indices of triangles in the points array
-
     delaunayTri = []
-
     for t in triangleList:
         pt = []
         pt.append((t[0], t[1]))
@@ -126,8 +125,6 @@ def calculateDelaunayTriangles(rect, points):
                         ind.append(k)
             if len(ind) == 3:
                 delaunayTri.append((ind[0], ind[1], ind[2]))
-
-
 
     return delaunayTri
 
@@ -191,6 +188,7 @@ if __name__ == '__main__' :
 
     dim = 600
     path = sys.argv[1]
+
     generate_landmark_files(path, dim)
 
     # Dimensions of output image
@@ -218,6 +216,7 @@ if __name__ == '__main__' :
     n = len(allPoints[0])
 
     numImages = len(images)
+    print('numImages = {}'.format(numImages))
 
     # Warp images and transform landmarks to output coordinate system,
     # and find average of transformed landmarks.
@@ -252,17 +251,23 @@ if __name__ == '__main__' :
         imagesNorm.append(img)
 
 
+    print('pointsNorm is {}'.format(pointsNorm))
+    print('and its length is {}'.format(len(pointsNorm)))
 
     # Delaunay triangulation
     rect = (0, 0, w, h)
     dt = calculateDelaunayTriangles(rect, np.array(pointsAvg))
+    print("Delaunay triangles: {}".format(dt))
+    # listToFileByLines3Elems(dt, "triangles.txt")
 
     # Output image
     output = np.zeros((h,w,3), np.float32())
 
+    # to_gif = []
     # Warp input images to average image landmarks
     for i in range(0, len(imagesNorm)) :
         img = np.zeros((h,w,3), np.float32())
+
         # Transform triangles one by one
         for j in range(0, len(dt)) :
             tin = []
@@ -278,25 +283,26 @@ if __name__ == '__main__' :
                 tin.append(pIn)
                 tout.append(pOut)
 
-
             warpTriangle(imagesNorm[i], img, tin, tout)
 
 
         # Add image intensities for averaging
         output = output + img
+        # to_gif.append(cv2.cvtColor(output, cv2.COLOR_BGR2RGB))
 
 
     # Divide by numImages to get average
     output = output / numImages
 
     # Display result
-    cv2.imshow('image', output)
+    cv2.imshow('average', output)
     deleteFilesInFolder(path)
-    cv2.imwrite(path + '/average.jpg', output)
+    mp.imsave('data/tmp/average.png', cv2.cvtColor(output, cv2.COLOR_BGR2RGB))
 
-while (1):
-    k = cv2.waitKey(0)
-    if k == 27:
-        break
-    else:
-        continue
+
+    while (1):
+        k = cv2.waitKey(0)
+        if k == 27:
+            break
+        else:
+            continue

@@ -119,11 +119,11 @@ vector<string> split(const string &s, char delim) {
     return elems;
 }
 
-ofApp::Pictures* process(string* line) {
+ofApp::Picture* process(string* line) {
     cout << "line read: " << *line << endl;
     vector<string> elems = split(*line, ' ');
     vector<string> names = split(elems[1], '_');
-    ofApp::Pictures *pic = new ofApp::Pictures();
+    ofApp::Picture *pic = new ofApp::Picture();
     pic->image.load(elems[0]);
     for (int i = 0; i < names.size() - 1; i++) {
         pic->name += names[i] + " ";

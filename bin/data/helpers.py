@@ -9,6 +9,7 @@ import glob
 from time import time, strftime, localtime
 from datetime import timedelta
 import face_recognition
+import math
 
 
 
@@ -82,7 +83,7 @@ def secondsToStr(elapsed=None):
         return str(timedelta(seconds=elapsed))
 
 def log(s, elapsed=None):
-    line = "=" * 40
+    line = "=" * 42
     print(line)
     print(secondsToStr(), '-', s)
     if elapsed:
@@ -100,6 +101,14 @@ def listToFileByLines(lst, filepath):
     with open(filepath, mode='w', encoding='utf-8') as theFile:
         for x in lst:
             theFile.write(str(x[0]) + ' ' + str(x[1]) + '\n')
+
+
+
+def listToFileByLines3Elems(lst, filepath):
+    with open(filepath, mode='w', encoding='utf-8') as daFile:
+        for x in lst:
+            daFile.write(str(x[0]) + ' ' + str(x[1]) + ' ' + str(x[2]) + '\n')
+
 
 
 def deleteFilesInFolder(folder):
@@ -151,7 +160,6 @@ def generate_landmark_files(folder, dim):
                         pose_landmarks = face_pose_predictor(image, face_rect)
 
                         landmarks = face_aligner.findLandmarks(image, face_rect)
-                        listToFileByLines(landmarks, picture + '.txt')
 
-                        # Use openface to calculate and perform the face alignment
-                        alignedFace = face_aligner.align(image_size, image, face_rect, landmarkIndices=openface.AlignDlib.OUTER_EYES_AND_NOSE)
+
+                        listToFileByLines(landmarks, picture + '.txt')

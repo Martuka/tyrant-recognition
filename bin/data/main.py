@@ -32,7 +32,7 @@ def main():
 
     # Create encodings database
     if CREATE_DB:
-        files = get_files_list("data/RecoFacial_Dataset")
+        files = get_files_list("data/dataset")
         create_templates_database(files, "db/dataset_facial_encodings.db")
     else:
         # dir_path = os.path.dirname(os.path.realpath(__file__))
